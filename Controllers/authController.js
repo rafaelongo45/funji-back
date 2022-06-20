@@ -16,8 +16,10 @@ export async function signup(req, res){
 };
 
 export async function signin(req, res){
+  const { token, profileImg, userId, username } = res.locals.userInfo;
   try {
-    return res.status(200);
+    await userRepository.createSession(userId, token);
+    return res.status(200).send({userId, username, profileImg});
   } catch (e) {
     console.log(chalk.bold.red('Server error'), e)
     return res.sendStatus(500);

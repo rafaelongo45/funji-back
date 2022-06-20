@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import bcrypt from "bcrypt";
-import { v4 as uuidv4} from "uuid";
+import { v4 as uuid} from "uuid";
 
 import authRepository from "../Repositories/authRepository.js";
 
@@ -10,6 +10,7 @@ export async function validateSignup(req, res, next){
   try {
     const userRequest = await authRepository.getUserByEmail(email);
     const [user] = userRequest.rows;
+    delete user.password;
     
     if(user){
       return res.status(409).send('User already registered');
@@ -28,16 +29,29 @@ export async function validateSignin(req, res, next){
   try {
     const userRequest = await authRepository.getUserByEmail(email);
     const [user] = userRequest.rows;
-    const hashPassword = user.password;
-    const validPassword = bcrypt.compareSync(password, hashPassword);
 
     if(!user){
       return res.status(404).send("Email doesn't exist!");
     }
 
+    const hashPassword = user.password;
+    const validPassword = bcrypt.compareSync(password, hashPassword);
+    delete user.password;
+
     if(!validPassword){
-      return res.status(401).send('Check your credentials!')
+      return res.status(401).send('Incorrect password!')
     }
+
+    const token = uuid();
+
+    const userInfo = {
+      userId: user.id,
+      token: token,
+      username: user.username,
+      profileImg: user.profileImg
+    }
+
+    res.locals.userInfo = userInfo;
 
     next();
   } catch (e) {

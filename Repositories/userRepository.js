@@ -13,12 +13,16 @@ function createUser(user){
   `, [username, email, hashPassword, profileImg]);
 };
 
-function createToken(){
-  
-}
+function createSession(userId, token){
+   return connection.query(`
+    INSERT INTO sessions("userId", token)
+    VALUES ($1, $2);  
+   `, [userId, token]);
+};
 
 const userRepository = {
-  createUser
+  createUser,
+  createSession
 };
 
 export default userRepository;
