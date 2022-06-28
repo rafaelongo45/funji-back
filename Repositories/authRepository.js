@@ -1,19 +1,31 @@
-import connection from "../config/db.js"
+import bcrypt from "bcrypt";
 
-async function getUserByName(username){
+import connection from "../config/db.js";
+
+async function createUser(user){
+  const { username, email, password, profileImg } = user;
+  const SALT = 10;
+  const hashPassword = bcrypt.hashSync(password, SALT);
+
   return connection.query(`
-    SELECT *
-    FROM users
-    WHERE username = $1;
-  `, [username]);
+    INSERT INTO users(username, email, password, "profileImg")
+    VALUES ($1, $2, $3, $4);
+  `, [username, email, hashPassword, profileImg]);
 };
 
-async function checkEmail(email){
+async function createSession(userId, token){
+   return connection.query(`
+    INSERT INTO sessions("userId", token)
+    VALUES ($1, $2);  
+   `, [userId, token]);
+};
+
+async function signout(userId, token){
   return connection.query(`
-    SELECT *
-    FROM users
-    WHERE email = $1;
-  `, [email]);
+    UPDATE sessions
+    SET "isValid" = false
+    WHERE "userId" = $1 AND token = $2;
+  `, [userId, token]);
 };
 
 async function findSession(token){
@@ -22,12 +34,13 @@ async function findSession(token){
     FROM sessions
     WHERE token = $1;
   `, [token]);
-}
+};
 
 const authRepository = {
+  signout,
+  createUser,
   findSession,
-  getUserByName,
-  checkEmail
+  createSession
 };
 
 export default authRepository;

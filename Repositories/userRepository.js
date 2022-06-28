@@ -1,37 +1,33 @@
-import bcrypt from "bcrypt";
+import connection from "../config/db.js"
 
-import connection from "../config/db.js";
-
-async function createUser(user){
-  const { username, email, password, profileImg } = user;
-  const SALT = 10;
-  const hashPassword = bcrypt.hashSync(password, SALT);
-
+async function getUserName(username){
   return connection.query(`
-    INSERT INTO users(username, email, password, "profileImg")
-    VALUES ($1, $2, $3, $4);
-  `, [username, email, hashPassword, profileImg]);
+    SELECT *
+    FROM users
+    WHERE username = $1;
+  `, [username]);
 };
 
-async function createSession(userId, token){
-   return connection.query(`
-    INSERT INTO sessions("userId", token)
-    VALUES ($1, $2);  
-   `, [userId, token]);
+async function getUserEmail(email){
+  return connection.query(`
+    SELECT *
+    FROM users
+    WHERE email = $1;
+  `, [email]);
 };
 
-async function signout(userId, token){
+async function changeImage(image, userId){
   return connection.query(`
-    UPDATE sessions
-    SET "isValid" = false
-    WHERE "userId" = $1 AND token = $2
-  `, [userId, token]);
+    UPDATE users
+    SET "profileImg" = $1
+    WHERE id = $2;
+  `, [image, userId]);
 };
 
 const userRepository = {
-  signout,
-  createUser,
-  createSession
+  getUserName,
+  changeImage,
+  getUserEmail
 };
 
 export default userRepository;

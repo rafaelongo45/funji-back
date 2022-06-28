@@ -2,13 +2,13 @@ import chalk from "chalk";
 import bcrypt from "bcrypt";
 import { v4 as uuid} from "uuid";
 
-import authRepository from "../Repositories/authRepository.js";
+import userRepository from "../Repositories/userRepository.js";
 
 export async function validateSignup(req, res, next){
   const { email } = req.body;
 
   try {
-    const userRequest = await authRepository.checkEmail(email);
+    const userRequest = await userRepository.checkEmail(email);
     const [user] = userRequest.rows;
     
     if(user){
@@ -26,7 +26,7 @@ export async function validateSignin(req, res, next){
   const { email, password } = req.body;
 
   try {
-    const userRequest = await authRepository.checkEmail(email);
+    const userRequest = await userRepository.getUserEmail(email);
     const [user] = userRequest.rows;
     console.log(user)
     if(!user){
