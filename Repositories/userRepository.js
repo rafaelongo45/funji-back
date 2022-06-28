@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 
 import connection from "../config/db.js";
 
-function createUser(user){
+async function createUser(user){
   const { username, email, password, profileImg } = user;
   const SALT = 10;
   const hashPassword = bcrypt.hashSync(password, SALT);
@@ -13,14 +13,23 @@ function createUser(user){
   `, [username, email, hashPassword, profileImg]);
 };
 
-function createSession(userId, token){
+async function createSession(userId, token){
    return connection.query(`
     INSERT INTO sessions("userId", token)
     VALUES ($1, $2);  
    `, [userId, token]);
 };
 
+async function signout(userId, token){
+  return connection.query(`
+    UPDATE sessions
+    SET "isValid" = false
+    WHERE "userId" = $1 AND token = $2
+  `, [userId, token]);
+};
+
 const userRepository = {
+  signout,
   createUser,
   createSession
 };

@@ -8,17 +8,16 @@ export async function validateSignup(req, res, next){
   const { email } = req.body;
 
   try {
-    const userRequest = await authRepository.getUserByEmail(email);
+    const userRequest = await authRepository.checkEmail(email);
     const [user] = userRequest.rows;
-    delete user.password;
     
     if(user){
       return res.status(409).send('User already registered');
-    }
-
+    };
+    
     next();
   } catch (e) {
-    console.log(chalk.bold.red('Server error'), e);
+    console.log(chalk.bold.red(e.message));
     return res.sendStatus(500);
   }
 };
@@ -27,11 +26,11 @@ export async function validateSignin(req, res, next){
   const { email, password } = req.body;
 
   try {
-    const userRequest = await authRepository.getUserByEmail(email);
+    const userRequest = await authRepository.checkEmail(email);
     const [user] = userRequest.rows;
-
+    console.log(user)
     if(!user){
-      return res.status(404).send("Email doesn't exist!");
+      return res.status(404).send("User doesn't exist!");
     }
 
     const hashPassword = user.password;
@@ -55,7 +54,7 @@ export async function validateSignin(req, res, next){
 
     next();
   } catch (e) {
-    console.log(chalk.bold.red('Server error'), e);
+    console.log(chalk.bold.red(e.message));
     return res.sendStatus(500);
   }
 };

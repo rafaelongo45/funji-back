@@ -10,18 +10,34 @@ export async function signup(req, res){
     await userRepository.createUser(user);
     res.sendStatus(201);
   } catch (e) {
-    console.log(chalk.bold.red('Server error'), e)
+    console.log(chalk.bold.red(e.message));
     return res.sendStatus(500);
   }
 };
 
 export async function signin(req, res){
   const { token, profileImg, userId, username } = res.locals.userInfo;
+  
   try {
     await userRepository.createSession(userId, token);
     return res.status(200).send({userId, username, profileImg});
   } catch (e) {
-    console.log(chalk.bold.red('Server error'), e)
+    console.log(chalk.bold.red(e.message));
+    return res.sendStatus(500);
+  }
+};
+
+export async function signout(req, res){
+  const { token } = res.locals;
+  const { userId } = req.params;
+
+  try {
+    await userRepository.signout(userId, token);
+
+    return res.sendStatus(200);
+  } catch (e) {
+    console.log(chalk.bold.red(e.message));
     return res.sendStatus(500);
   }
 }
+

@@ -1,6 +1,6 @@
 import connection from "../config/db.js"
 
-function getUserByName(username){
+async function getUserByName(username){
   return connection.query(`
     SELECT *
     FROM users
@@ -8,7 +8,7 @@ function getUserByName(username){
   `, [username]);
 };
 
-function getUserByEmail(email){
+async function checkEmail(email){
   return connection.query(`
     SELECT *
     FROM users
@@ -16,9 +16,18 @@ function getUserByEmail(email){
   `, [email]);
 };
 
+async function findSession(token){
+  return connection.query(`
+    SELECT *
+    FROM sessions
+    WHERE token = $1;
+  `, [token]);
+}
+
 const authRepository = {
+  findSession,
   getUserByName,
-  getUserByEmail
+  checkEmail
 };
 
 export default authRepository;
