@@ -24,10 +24,21 @@ async function changeImage(image, userId){
   `, [image, userId]);
 };
 
+async function getLeaderboard(){
+  return connection.query(`
+    SELECT u.id, u.username, u."profileImg", p.points 
+    FROM users AS u
+    LEFT JOIN points AS p
+    ON u.id = p."userId"
+    ORDER BY p.points DESC
+  `);
+};
+
 const userRepository = {
   getUserName,
   changeImage,
-  getUserEmail
+  getUserEmail,
+  getLeaderboard
 };
 
 export default userRepository;

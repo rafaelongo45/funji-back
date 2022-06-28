@@ -8,7 +8,7 @@ export async function validateSignup(req, res, next){
   const { email } = req.body;
 
   try {
-    const userRequest = await userRepository.checkEmail(email);
+    const userRequest = await userRepository.getUserEmail(email);
     const [user] = userRequest.rows;
     
     if(user){

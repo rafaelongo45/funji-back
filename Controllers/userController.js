@@ -16,3 +16,14 @@ export async function changeImage(req, res){
     return res.sendStatus(500);
   }
 };
+
+export async function getLeaderboard(req, res){
+  try {
+    const leaderboardRequest = await userRepository.getLeaderboard();
+    const leaderboard = leaderboardRequest.rows;
+    return res.status(200).send(leaderboard);
+  } catch (e) {
+    console.log(chalk.bold.red(e.message));
+    return res.sendStatus(500);
+  }
+};
