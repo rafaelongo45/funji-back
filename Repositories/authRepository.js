@@ -1,16 +1,12 @@
-import bcrypt from "bcrypt";
 
 import connection from "../config/db.js";
 
-async function createUser(user){
-  const { username, email, password, profileImg } = user;
-  const SALT = 10;
-  const hashPassword = bcrypt.hashSync(password, SALT);
-
+async function createUser(user, password){
+  const { username, email, profileImg } = user;
   return connection.query(`
     INSERT INTO users(username, email, password, "profileImg")
     VALUES ($1, $2, $3, $4);
-  `, [username, email, hashPassword, profileImg]);
+  `, [username, email, password, profileImg]);
 };
 
 async function createSession(userId, token){

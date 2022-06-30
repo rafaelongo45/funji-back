@@ -7,13 +7,6 @@ CREATE TABLE "users" (
     "createdAt" TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE "points" (
-    "id" SERIAL PRIMARY KEY,
-    "userId" INTEGER NOT NULL REFERENCES "users"("id"),
-    "points" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP DEFAULT NOW()
-);
-
 CREATE TABLE "sessions" (
     "id" SERIAL PRIMARY KEY,
     "userId" INTEGER NOT NULL REFERENCES "users"("id"),
@@ -24,14 +17,15 @@ CREATE TABLE "sessions" (
 
 CREATE TABLE "kanjis" (
     "id" SERIAL PRIMARY KEY,
-    "kanji" TEXT NOT NULL,
+    "kanji" TEXT NOT NULL UNIQUE,
     "grade" SMALLINT NOT NULL,
-    "isMemorized" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE "usersKanjis"(
     "id" SERIAL PRIMARY KEY,
     "userId" INTEGER NOT NULL REFERENCES "users"("id"),
-    "kanjisId" INTEGER NOT NULL REFERENCES "kanjis"("id")
+    "kanjiId" INTEGER NOT NULL REFERENCES "kanjis"("id"),
+    "points" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP DEFAULT NOW()
 );

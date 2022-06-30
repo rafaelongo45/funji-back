@@ -1,4 +1,5 @@
 import chalk from "chalk";
+import bcrypt from "bcrypt";
 
 import authRepository from "../Repositories/authRepository.js";
 
@@ -6,8 +7,11 @@ export async function signup(req, res){
   const user = req.body;
   delete user.confirmPassword;
 
+  const SALT = 10;
+  const hashPassword = bcrypt.hashSync(user.password, SALT);
+
   try {
-    await authRepository.createUser(user);
+    await authRepository.createUser(user, hashPassword);
     res.sendStatus(201);
   } catch (e) {
     console.log(chalk.bold.red(e.message));

@@ -26,11 +26,11 @@ async function changeImage(image, userId){
 
 async function getLeaderboard(){
   return connection.query(`
-    SELECT u.id, u.username, u."profileImg", p.points 
+    SELECT u.username, u."profileImg", uk.points
     FROM users AS u
-    LEFT JOIN points AS p
-    ON u.id = p."userId"
-    ORDER BY p.points DESC
+    JOIN "usersKanjis" AS uk
+    ON uk."userId" = u.id
+    ORDER BY uk.points DESC;
   `);
 };
 
